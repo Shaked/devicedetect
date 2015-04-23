@@ -10,5 +10,5 @@ type StubMuxHandler struct {
 }
 
 func (h *StubMuxHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Platform-%s: %s", Platform(r), h.printResult)
+	fmt.Fprintf(w, "Platform-%d: %s", Platform(r), h.printResult)
 }

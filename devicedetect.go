@@ -40,12 +40,12 @@ func (d *DeviceDetect) PlatformType() platform.Device {
 }
 
 // Vars returns the route variables for the current request, if any.
-func Platform(r *http.Request) string {
+func Platform(r *http.Request) platform.DeviceType {
 	if rv := context.Get(r, "Platform"); rv != nil {
 		device := rv.(platform.Device)
-		return device.String()
+		return device.Which()
 	}
-	return ""
+	return platform.UNKNOWN
 }
 
 type PlatformHandler interface {

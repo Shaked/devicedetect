@@ -1,11 +1,23 @@
 package platform
 
+type DeviceType int
+
+const (
+	TABLET DeviceType = iota
+	MOBILE
+	TV
+	DESKTOP
+	WATCH
+	BOT
+	UNKNOWN
+)
+
 type Device interface {
 	Name() string
 	Version() string
 	Os() string
 
-	String() string
+	Which() DeviceType
 }
 type GenericDevice struct {
 	name    string
@@ -29,48 +41,48 @@ type DeviceTablet struct {
 	GenericDevice
 }
 
-func (g DeviceTablet) String() string {
-	return "Tablet"
+func (g DeviceTablet) Which() DeviceType {
+	return TABLET
 }
 
 type DeviceMobile struct {
 	GenericDevice
 }
 
-func (g DeviceMobile) String() string {
-	return "Mobile"
+func (g DeviceMobile) Which() DeviceType {
+	return MOBILE
 }
 
 type DeviceTv struct {
 	GenericDevice
 }
 
-func (g DeviceTv) String() string {
-	return "Tv"
+func (g DeviceTv) Which() DeviceType {
+	return TV
 }
 
 type DeviceDesktop struct {
 	GenericDevice
 }
 
-func (g DeviceDesktop) String() string {
-	return "Desktop"
+func (g DeviceDesktop) Which() DeviceType {
+	return DESKTOP
 }
 
 type DeviceWatch struct {
 	GenericDevice
 }
 
-func (g DeviceWatch) String() string {
-	return "Watch"
+func (g DeviceWatch) Which() DeviceType {
+	return WATCH
 }
 
 type DeviceBot struct {
 	GenericDevice
 }
 
-func (g DeviceBot) String() string {
-	return "Bot"
+func (g DeviceBot) Which() DeviceType {
+	return BOT
 }
 
 func NewTablet(name, version, os string) Device {
