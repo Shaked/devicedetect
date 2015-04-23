@@ -12,16 +12,18 @@ var file = ""
 var hashingCollisionErr = errors.New("Hashing collision, try different hashing algorithm")
 var unknownBrowser = "Unknown Browser"
 
+var UnknownOs = "Unknown Browser"
+var DesktopPlatform = "Desktop"
+
 type Device struct {
 	browser  string
-	os       string
 	version  string
+	os       string
 	platform string
-	name     string
 }
 
-func NewDevice(browser, os, version, platform, name string) *Device {
-	return &Device{browser, os, version, platform, name}
+func NewDevice(browser, version, os, platform string) *Device {
+	return &Device{browser, version, os, platform}
 }
 
 func main() {
