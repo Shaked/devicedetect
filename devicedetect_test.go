@@ -78,8 +78,9 @@ func TestIfMuxWorsProperly(t *testing.T) {
 	u := fmt.Sprintf("%s/detectdevice", s.URL)
 
 	uas := map[string]string{
-		userAgent1: fmt.Sprintf("Platform-%d: empty", platform.DESKTOP),
-		userAgent2: fmt.Sprintf("Platform-%d: empty", platform.BOT),
+		userAgent1:     fmt.Sprintf("Platform-%d: empty", platform.DESKTOP),
+		userAgent2:     fmt.Sprintf("Platform-%d: empty", platform.BOT),
+		"doesnt-exist": fmt.Sprintf("Platform-%d: empty", platform.UNKNOWN),
 	}
 
 	createServer(t, s, u, uas)
