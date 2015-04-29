@@ -1,10 +1,15 @@
-package devicedetect
+package compiled
 
 import "github.com/Shaked/devicedetect/platform"
 
+const (
+	UnknownOs      = "UnknownOs"
+	UnknownVersion = "UnknownVersion"
+)
+
 var compiledUserAgents = map[uint32]func() platform.Device{}
 
-func injectUserAgents() {
+func InjectUserAgents() {
 
 	compiledUserAgents[131354474] = func() platform.Device {
 		return platform.NewDesktop("ABrowse", "0.6", UnknownOs)

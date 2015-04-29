@@ -42,13 +42,13 @@ var userAgents = map[string]string{
 }
 
 func main() {
-	ioutil.WriteFile("./compiled_devices.go", Compile(), 0644)
+	ioutil.WriteFile("../compiled/devices.go", Compile(), 0644)
 }
 
 func Compile() []byte {
 
 	code := `
-	package devicedetect
+	package compiled
 
 	const (
 		UnknownOs      = "UnknownOs"
@@ -57,7 +57,7 @@ func Compile() []byte {
 
 	var compiledUserAgents = map[uint32]func() platform.Device{}
 
-	func injectUserAgents(){
+	func InjectUserAgents(){
 
 `
 	for ua, fDevice := range userAgents {

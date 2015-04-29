@@ -3,6 +3,7 @@ package devicedetect
 import (
 	"net/http"
 
+	"github.com/Shaked/devicedetect/compiled"
 	"github.com/Shaked/devicedetect/platform"
 	"github.com/Shaked/devicedetect/util"
 	"github.com/gorilla/context"
@@ -13,15 +14,25 @@ const (
 	UnknownVersion = "UnknownVersion"
 )
 
+type PreCompiledHandler interface {
+	InjectUserAgents()
+}
+
+type Compiled struct{}
+
+func (p *Compiled) InjectUserAgents() {
+	compiled.InjectUserAgents()
+}
+
 type DeviceDetect struct {
 	r *http.Request
 }
 
-func init() {
-	injectUserAgents()
-}
-
-func NewDeviceDetect(r *http.Request) *DeviceDetect {
+func NewDeviceDetect(r *http.Request, p PreCompiledHandler) *DeviceDetect {
+	if nil == p {
+		p = &Compiled{}
+	}
+	p.InjectUserAgents()
 	return &DeviceDetect{r: r}
 }
 
@@ -57,9 +68,9 @@ type PlatformHandler interface {
 	Bot(w http.ResponseWriter, r *http.Request, d *DeviceDetect)
 }
 
-func Handler(h PlatformHandler) http.Handler {
+func Handler(h PlatformHandler, p PreCompiledHandler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		m := NewDeviceDetect(r)
+		m := NewDeviceDetect(r, p)
 
 		switch m.PlatformType().(type) {
 		case *platform.DeviceTablet:
@@ -85,9 +96,9 @@ func Handler(h PlatformHandler) http.Handler {
 	})
 }
 
-func HandlerMux(s *http.ServeMux) http.Handler {
+func HandlerMux(s *http.ServeMux, p PreCompiledHandler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		m := NewDeviceDetect(r)
+		m := NewDeviceDetect(r, p)
 		context.Set(r, "Platform", m.PlatformType())
 		s.ServeHTTP(w, r)
 	})
