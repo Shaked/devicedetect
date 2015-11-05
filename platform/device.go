@@ -14,97 +14,68 @@ const (
 
 type Device interface {
 	Name() string
-	Version() string
-	Os() string
-
-	Which() DeviceType
+	Type() DeviceType
+	// Platform() map[string]map[string]string
+	// Engine() map[string]map[string]string
+	// Browsers() map[string]map[string]string
 }
 type GenericDevice struct {
-	name    string
-	version string
-	os      string
+	name string
+	typ  DeviceType
 }
 
 func (g GenericDevice) Name() string {
 	return g.name
 }
 
-func (g GenericDevice) Version() string {
-	return g.version
-}
-
-func (g GenericDevice) Os() string {
-	return g.os
+func (g GenericDevice) Type() DeviceType {
+	return g.typ
 }
 
 type DeviceTablet struct {
 	GenericDevice
 }
 
-func (g DeviceTablet) Which() DeviceType {
-	return TABLET
-}
-
 type DeviceMobile struct {
 	GenericDevice
-}
-
-func (g DeviceMobile) Which() DeviceType {
-	return MOBILE
 }
 
 type DeviceTv struct {
 	GenericDevice
 }
 
-func (g DeviceTv) Which() DeviceType {
-	return TV
-}
-
 type DeviceDesktop struct {
 	GenericDevice
-}
-
-func (g DeviceDesktop) Which() DeviceType {
-	return DESKTOP
 }
 
 type DeviceWatch struct {
 	GenericDevice
 }
 
-func (g DeviceWatch) Which() DeviceType {
-	return WATCH
-}
-
 type DeviceBot struct {
 	GenericDevice
 }
 
-func (g DeviceBot) Which() DeviceType {
-	return BOT
+func NewTablet(name string) Device {
+	return &DeviceTablet{GenericDevice{name, TABLET}}
 }
 
-func NewTablet(name, version, os string) Device {
-	return &DeviceTablet{GenericDevice{name, version, os}}
+func NewMobile(name string) Device {
+	return &DeviceMobile{GenericDevice{name, MOBILE}}
 }
 
-func NewMobile(name, version, os string) Device {
-	return &DeviceMobile{GenericDevice{name, version, os}}
+func NewTv(name string) Device {
+	return &DeviceTv{GenericDevice{name, TV}}
 }
 
-func NewTv(name, version, os string) Device {
-	return &DeviceTv{GenericDevice{name, version, os}}
+func NewDesktop(name string) Device {
+	return &DeviceDesktop{GenericDevice{name, DESKTOP}}
 }
 
-func NewDesktop(name, version, os string) Device {
-	return &DeviceDesktop{GenericDevice{name, version, os}}
+func NewWatch(name string) Device {
+	return &DeviceWatch{GenericDevice{name, WATCH}}
 }
 
-func NewWatch(name, version, os string) Device {
-	return &DeviceWatch{GenericDevice{name, version, os}}
-}
-
-func NewBot(name, version, os string) Device {
-	return &DeviceBot{GenericDevice{name, version, os}}
+func NewBot(name string) Device {
+	return &DeviceBot{GenericDevice{name, BOT}}
 }

@@ -18,21 +18,53 @@ const (
 
 type PreCompiledHandler struct{}
 
+type Compiled struct {
+	hashFunc   string
+	userAgents map[string]platform.Device
+}
+
 //func() platform.Device
-func (p *PreCompiledHandler) compile() map[string]interface{} {
-	v := map[string]interface{}{}
+func (p *PreCompiledHandler) compile() *Compiled {
+	v := struct {
+		Meta       map[string]string                 `json:meta`
+		UserAgents map[string]map[string]interface{} `json:userAgents`
+	}{}
+
 	log.Println(compiledUserAgents)
 	err := json.Unmarshal([]byte(compiledUserAgents), &v)
 	if nil != err {
 		panic(err)
 	}
-	log.Println(v)
-	return v
+
+	c := &Compiled{}
+
+	hash := v.Meta["hash"]
+	c.hashFunc = hash
+	log.Println("CRC? ", hash)
+
+	userAgents := map[string]platform.Device{}
+	var device platform.Device
+	for key, deviceInfo := range v.UserAgents {
+		switch deviceInfo["type"].(string) {
+		case "desktop":
+			device = platform.NewDesktop(deviceInfo["name"].(string))
+			break
+		case "tablet":
+			device = platform.NewTablet(deviceInfo["name"].(string))
+			break
+		default:
+			panic("WTF?")
+		}
+		userAgents[key] = device
+	}
+	c.userAgents = userAgents
+
+	return c
 }
 
 type DeviceDetect struct {
 	r    *http.Request
-	meta map[string]interface{}
+	meta *Compiled
 }
 
 func NewDeviceDetect(r *http.Request, p *PreCompiledHandler) *DeviceDetect {
@@ -42,12 +74,9 @@ func NewDeviceDetect(r *http.Request, p *PreCompiledHandler) *DeviceDetect {
 
 func (d *DeviceDetect) FindByUserAgent(userAgent string) platform.Device {
 	key := UserAgentToKey(userAgent)
-	f, ok := d.meta[fmt.Sprint(key)]
+	f, ok := d.meta.userAgents[fmt.Sprint(key)]
 	if ok {
-		// device := f()
-		device := f
-		log.Println("device", device)
-		return nil
+		return f
 	}
 	return nil
 }
@@ -60,7 +89,7 @@ func (d *DeviceDetect) PlatformType() platform.Device {
 func Platform(r *http.Request) (platform.DeviceType, string) {
 	if rv := context.Get(r, "Platform"); rv != nil {
 		device := rv.(platform.Device)
-		return device.Which(), device.Name()
+		return device.Type(), device.Name()
 	}
 	return platform.UNKNOWN, "UNKNOWN"
 }
