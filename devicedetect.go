@@ -78,7 +78,7 @@ func (d *DeviceDetect) FindByUserAgent(userAgent string) platform.Device {
 	if ok {
 		return f
 	}
-	return nil
+	return platform.NewUnknown(userAgent)
 }
 
 func (d *DeviceDetect) PlatformType() platform.Device {
@@ -86,45 +86,44 @@ func (d *DeviceDetect) PlatformType() platform.Device {
 }
 
 // Vars returns the route variables for the current request, if any.
-func Platform(r *http.Request) (platform.DeviceType, string) {
-	if rv := context.Get(r, "Platform"); rv != nil {
-		device := rv.(platform.Device)
-		return device.Type(), device.Name()
-	}
-	return platform.UNKNOWN, "UNKNOWN"
+func Platform(r *http.Request) platform.Device {
+	rv := context.Get(r, "Platform")
+	device := rv.(platform.Device)
+	return device
 }
 
 type PlatformHandler interface {
-	Mobile(w http.ResponseWriter, r *http.Request, d *DeviceDetect)
-	Tablet(w http.ResponseWriter, r *http.Request, d *DeviceDetect)
-	Desktop(w http.ResponseWriter, r *http.Request, d *DeviceDetect)
-	Tv(w http.ResponseWriter, r *http.Request, d *DeviceDetect)
-	Watch(w http.ResponseWriter, r *http.Request, d *DeviceDetect)
-	Bot(w http.ResponseWriter, r *http.Request, d *DeviceDetect)
+	Mobile(w http.ResponseWriter, r *http.Request, d *platform.DeviceMobile)
+	Tablet(w http.ResponseWriter, r *http.Request, d *platform.DeviceTablet)
+	Desktop(w http.ResponseWriter, r *http.Request, d *platform.DeviceDesktop)
+	Tv(w http.ResponseWriter, r *http.Request, d *platform.DeviceTv)
+	Watch(w http.ResponseWriter, r *http.Request, d *platform.DeviceWatch)
+	Bot(w http.ResponseWriter, r *http.Request, d *platform.DeviceBot)
+	Unknown(w http.ResponseWriter, r *http.Request, d *platform.DeviceUnknown)
 }
 
 func Handler(h PlatformHandler, p *PreCompiledHandler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		m := NewDeviceDetect(r, p)
-
+		d := m.FindByUserAgent(r.Header.Get("User-Agent"))
 		switch m.PlatformType().(type) {
 		case *platform.DeviceTablet:
-			h.Tablet(w, r, m)
+			h.Tablet(w, r, d.(*platform.DeviceTablet))
 			break
 		case *platform.DeviceMobile:
-			h.Mobile(w, r, m)
+			h.Mobile(w, r, d.(*platform.DeviceMobile))
 			break
 		case *platform.DeviceTv:
-			h.Tv(w, r, m)
+			h.Tv(w, r, d.(*platform.DeviceTv))
 			break
 		case *platform.DeviceWatch:
-			h.Watch(w, r, m)
+			h.Watch(w, r, d.(*platform.DeviceWatch))
 			break
 		case *platform.DeviceDesktop:
-			h.Desktop(w, r, m)
+			h.Desktop(w, r, d.(*platform.DeviceDesktop))
 			break
 		case *platform.DeviceBot:
-			h.Bot(w, r, m)
+			h.Bot(w, r, d.(*platform.DeviceBot))
 			break
 		}
 

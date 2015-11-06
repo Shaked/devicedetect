@@ -56,6 +56,10 @@ type DeviceBot struct {
 	GenericDevice
 }
 
+type DeviceUnknown struct {
+	GenericDevice
+}
+
 func NewTablet(name string) Device {
 	return &DeviceTablet{GenericDevice{name, TABLET}}
 }
@@ -72,10 +76,14 @@ func NewDesktop(name string) Device {
 	return &DeviceDesktop{GenericDevice{name, DESKTOP}}
 }
 
-func NewWatch(name string) Device {
+func NewWatch(name string) *DeviceWatch {
 	return &DeviceWatch{GenericDevice{name, WATCH}}
 }
 
-func NewBot(name string) Device {
+func NewBot(name string) *DeviceBot {
 	return &DeviceBot{GenericDevice{name, BOT}}
+}
+
+func NewUnknown(name string) *DeviceUnknown {
+	return &DeviceUnknown{GenericDevice{name, UNKNOWN}}
 }

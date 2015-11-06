@@ -10,10 +10,9 @@ import (
 func main() {
 	h := &StubMuxHandler{}
 	m := http.NewServeMux()
-	m.Handle("/detectdevice", h)
+	m.Handle("/", h)
 	p := &devicedetect.PreCompiledHandler{}
 	http.ListenAndServe(":8000", devicedetect.HandlerMux(m, p))
-
 }
 
 type StubMuxHandler struct {
@@ -21,6 +20,6 @@ type StubMuxHandler struct {
 }
 
 func (h *StubMuxHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	t, name := devicedetect.Platform(r)
-	fmt.Fprintf(w, "Platform-%d-%s: %s", t, name, h.printResult)
+	device := devicedetect.Platform(r)
+	fmt.Fprintf(w, "Platform-%d-%s: %s", device.Type(), device.Name(), h.printResult)
 }
