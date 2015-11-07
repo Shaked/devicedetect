@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/Shaked/godevicedetect/platform"
+	"github.com/Shaked/user-agents/bin/go/gouseragents"
 	"github.com/gorilla/context"
 )
 
@@ -30,8 +31,8 @@ func (p *PreCompiledHandler) compile() *Compiled {
 		UserAgents map[string]map[string]interface{} `json:userAgents`
 	}{}
 
-	log.Println(compiledUserAgents)
-	err := json.Unmarshal([]byte(compiledUserAgents), &v)
+	log.Println(gouseragents.CompiledUserAgents)
+	err := json.Unmarshal([]byte(gouseragents.CompiledUserAgents), &v)
 	if nil != err {
 		panic(err)
 	}
