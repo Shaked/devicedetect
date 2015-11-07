@@ -1,6 +1,6 @@
 ## Device Detect Package for Go
 
-This package contains the ability to detect different devices by it's user agent.
+Provides the ability to detect different devices by it's user agent.
 
 ### Status: not stable yet!
 
