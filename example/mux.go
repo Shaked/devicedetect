@@ -4,15 +4,15 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/Shaked/devicedetect"
+	"github.com/Shaked/godevicedetect"
 )
 
 func main() {
 	h := &StubMuxHandler{}
 	m := http.NewServeMux()
 	m.Handle("/", h)
-	p := &devicedetect.PreCompiledHandler{}
-	http.ListenAndServe(":8000", devicedetect.HandlerMux(m, p))
+	p := &godevicedetect.PreCompiledHandler{}
+	http.ListenAndServe(":8000", godevicedetect.HandlerMux(m, p))
 }
 
 type StubMuxHandler struct {
@@ -20,6 +20,6 @@ type StubMuxHandler struct {
 }
 
 func (h *StubMuxHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	device := devicedetect.Platform(r)
+	device := godevicedetect.Platform(r)
 	fmt.Fprintf(w, "Platform-%d-%s: %s", device.Type(), device.Name(), h.printResult)
 }

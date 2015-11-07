@@ -5,8 +5,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/Shaked/devicedetect"
-	"github.com/Shaked/devicedetect/platform"
+	"github.com/Shaked/godevicedetect"
+	"github.com/Shaked/godevicedetect/platform"
 )
 
 type Handler struct{}
@@ -58,6 +58,6 @@ func main() {
 	log.Println("Starting local server http://localhost:8000/ (cmd+click to open from terminal)")
 	h := &Handler{}
 	mux := http.NewServeMux()
-	mux.Handle("/", devicedetect.Handler(h, nil))
+	mux.Handle("/", godevicedetect.Handler(h, nil))
 	http.ListenAndServe(":8000", mux)
 }

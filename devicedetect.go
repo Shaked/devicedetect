@@ -1,4 +1,4 @@
-package devicedetect
+package godevicedetect
 
 import (
 	"encoding/json"
@@ -7,7 +7,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/Shaked/devicedetect/platform"
+	"github.com/Shaked/godevicedetect/platform"
 	"github.com/gorilla/context"
 )
 
