@@ -41,7 +41,6 @@ func (p *PreCompiledHandler) compile() *Compiled {
 
 	hash := v.Meta["hash"]
 	c.hashFunc = hash
-	log.Println("CRC? ", hash)
 
 	userAgents := map[string]platform.Device{}
 	var device platform.Device
