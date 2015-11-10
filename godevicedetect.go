@@ -8,7 +8,7 @@ import (
 	"net/http"
 
 	"github.com/Shaked/godevicedetect/platform"
-	"github.com/Shaked/user-agents/bin/go/gouseragents"
+	"github.com/Shaked/user-agents/packages/go/gouseragents"
 	"github.com/gorilla/context"
 )
 
@@ -52,8 +52,14 @@ func (p *PreCompiledHandler) compile() *Compiled {
 		case "tablet":
 			device = platform.NewTablet(deviceInfo["name"].(string))
 			break
+		case "app":
+		case "mobile":
+			device = platform.NewMobile(deviceInfo["name"].(string))
+		case "bot":
+			device = platform.NewBot(deviceInfo["name"].(string))
+			break
 		default:
-			panic("WTF?")
+			panic("WTF :" + deviceInfo["type"].(string))
 		}
 		userAgents[key] = device
 	}
