@@ -6,6 +6,7 @@ import (
 	"hash/crc32"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/Shaked/godevicedetect/platform"
 	"github.com/Shaked/user-agents/packages/go/gouseragents"
@@ -111,7 +112,7 @@ type PlatformHandler interface {
 func Handler(h PlatformHandler, p *PreCompiledHandler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		m := NewDeviceDetect(r, p)
-		d := m.FindByUserAgent(r.Header.Get("User-Agent"))
+		d := m.FindByUserAgent(strings.ToLower(r.Header.Get("User-Agent")))
 		switch m.PlatformType().(type) {
 		case *platform.DeviceTablet:
 			h.Tablet(w, r, d.(*platform.DeviceTablet))
