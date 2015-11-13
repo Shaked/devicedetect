@@ -46,18 +46,22 @@ func (p *PreCompiledHandler) compile() *Compiled {
 	userAgents := map[string]platform.Device{}
 	var device platform.Device
 	for key, deviceInfo := range v.UserAgents {
+		deviceName := deviceInfo["name"].(string)
 		switch deviceInfo["type"].(string) {
 		case "desktop":
-			device = platform.NewDesktop(deviceInfo["name"].(string))
+			device = platform.NewDesktop(deviceName)
 			break
 		case "tablet":
-			device = platform.NewTablet(deviceInfo["name"].(string))
+			device = platform.NewTablet(deviceName)
 			break
 		case "app":
 		case "mobile":
-			device = platform.NewMobile(deviceInfo["name"].(string))
+			device = platform.NewMobile(deviceName)
 		case "bot":
-			device = platform.NewBot(deviceInfo["name"].(string))
+			device = platform.NewBot(deviceName)
+			break
+		case "glass":
+			device = platform.NewGlass(deviceName)
 			break
 		default:
 			panic("WTF :" + deviceInfo["type"].(string))
@@ -80,7 +84,7 @@ func NewDeviceDetect(r *http.Request, p *PreCompiledHandler) *DeviceDetect {
 }
 
 func (d *DeviceDetect) FindByUserAgent(userAgent string) platform.Device {
-	key := UserAgentToKey(userAgent)
+	key := UserAgentToKey(strings.ToLower(userAgent))
 	f, ok := d.meta.userAgents[fmt.Sprint(key)]
 	if ok {
 		return f
@@ -106,13 +110,14 @@ type PlatformHandler interface {
 	Tv(w http.ResponseWriter, r *http.Request, d *platform.DeviceTv)
 	Watch(w http.ResponseWriter, r *http.Request, d *platform.DeviceWatch)
 	Bot(w http.ResponseWriter, r *http.Request, d *platform.DeviceBot)
+	Glass(w http.ResponseWriter, r *http.Request, d *platform.DeviceGlass)
 	Unknown(w http.ResponseWriter, r *http.Request, d *platform.DeviceUnknown)
 }
 
 func Handler(h PlatformHandler, p *PreCompiledHandler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		m := NewDeviceDetect(r, p)
-		d := m.FindByUserAgent(strings.ToLower(r.Header.Get("User-Agent")))
+		d := m.FindByUserAgent(r.Header.Get("User-Agent"))
 		switch m.PlatformType().(type) {
 		case *platform.DeviceTablet:
 			h.Tablet(w, r, d.(*platform.DeviceTablet))
@@ -131,6 +136,9 @@ func Handler(h PlatformHandler, p *PreCompiledHandler) http.Handler {
 			break
 		case *platform.DeviceBot:
 			h.Bot(w, r, d.(*platform.DeviceBot))
+			break
+		case *platform.DeviceGlass:
+			h.Glass(w, r, d.(*platform.DeviceGlass))
 			break
 		}
 

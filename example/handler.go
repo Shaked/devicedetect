@@ -35,6 +35,12 @@ func (h *Handler) Bot(w http.ResponseWriter,
 ) {
 	fmt.Fprint(w, "Hello, this is: ", d.Type())
 }
+func (h *Handler) Glass(w http.ResponseWriter,
+	r *http.Request,
+	d *platform.DeviceGlass,
+) {
+	fmt.Fprint(w, "Hello, this is: ", d.Type())
+}
 func (h *Handler) Watch(w http.ResponseWriter,
 	r *http.Request,
 	d *platform.DeviceWatch,

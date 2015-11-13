@@ -9,6 +9,7 @@ const (
 	DESKTOP
 	WATCH
 	BOT
+	GLASS
 	UNKNOWN
 )
 
@@ -56,6 +57,10 @@ type DeviceBot struct {
 	GenericDevice
 }
 
+type DeviceGlass struct {
+	GenericDevice
+}
+
 type DeviceUnknown struct {
 	GenericDevice
 }
@@ -82,6 +87,10 @@ func NewWatch(name string) *DeviceWatch {
 
 func NewBot(name string) *DeviceBot {
 	return &DeviceBot{GenericDevice{name, BOT}}
+}
+
+func NewGlass(name string) *DeviceGlass {
+	return &DeviceGlass{GenericDevice{name, GLASS}}
 }
 
 func NewUnknown(name string) *DeviceUnknown {
