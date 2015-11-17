@@ -15,49 +15,97 @@ func (h *Handler) Mobile(w http.ResponseWriter,
 	r *http.Request,
 	d *platform.DeviceMobile,
 ) {
-	fmt.Fprint(w, "Hello, this is: ", d.Type())
+	p := d.Platform()
+	if nil != p {
+		fmt.Fprint(w, "Hello, this is: ", d.Type(), d.Platform().Name(), d.Platform().Version())
+	} else {
+		fmt.Fprint(w, "Hello, this is: ", d.Type())
+	}
+
 }
 func (h *Handler) Tablet(w http.ResponseWriter,
 	r *http.Request,
 	d *platform.DeviceTablet,
 ) {
-	fmt.Fprint(w, "Hello, this is: ", d.Type())
+	p := d.Platform()
+	if nil != p {
+		fmt.Fprint(w, "Hello, this is: ", d.Type(), d.Platform().Name(), d.Platform().Version())
+	} else {
+		fmt.Fprint(w, "Hello, this is: ", d.Type())
+	}
+
 }
 func (h *Handler) Desktop(w http.ResponseWriter,
 	r *http.Request,
 	d *platform.DeviceDesktop,
 ) {
-	fmt.Fprint(w, "Hello, this is: ", d.Type())
+	p := d.Platform()
+	if nil != p {
+		fmt.Fprint(w, "Hello, this is: ", d.Type(), d.Platform().Name(), d.Platform().Version())
+	} else {
+		fmt.Fprint(w, "Hello, this is: ", d.Type())
+	}
+
 }
 func (h *Handler) Bot(w http.ResponseWriter,
 	r *http.Request,
 	d *platform.DeviceBot,
 ) {
-	fmt.Fprint(w, "Hello, this is: ", d.Type())
+	p := d.Platform()
+	if nil != p {
+		fmt.Fprint(w, "Hello, this is: ", d.Type(), d.Platform().Name(), d.Platform().Version())
+	} else {
+		fmt.Fprint(w, "Hello, this is: ", d.Type())
+	}
+
 }
 func (h *Handler) Glass(w http.ResponseWriter,
 	r *http.Request,
 	d *platform.DeviceGlass,
 ) {
-	fmt.Fprint(w, "Hello, this is: ", d.Type())
+	p := d.Platform()
+	if nil != p {
+		fmt.Fprint(w, "Hello, this is: ", d.Type(), d.Platform().Name(), d.Platform().Version())
+	} else {
+		fmt.Fprint(w, "Hello, this is: ", d.Type())
+	}
+
 }
 func (h *Handler) Watch(w http.ResponseWriter,
 	r *http.Request,
 	d *platform.DeviceWatch,
 ) {
-	fmt.Fprint(w, "Hello, this is: ", d.Type())
+	p := d.Platform()
+	if nil != p {
+		fmt.Fprint(w, "Hello, this is: ", d.Type(), d.Platform().Name(), d.Platform().Version())
+	} else {
+		fmt.Fprint(w, "Hello, this is: ", d.Type())
+	}
+
 }
 func (h *Handler) Tv(w http.ResponseWriter,
 	r *http.Request,
 	d *platform.DeviceTv,
 ) {
-	fmt.Fprint(w, "Hello, this is: ", d.Type())
+	p := d.Platform()
+	if nil != p {
+		fmt.Fprint(w, "Hello, this is: ", d.Type(), d.Platform().Name(), d.Platform().Version())
+	} else {
+		fmt.Fprint(w, "Hello, this is: ", d.Type())
+	}
+
 }
 func (h *Handler) Unknown(w http.ResponseWriter,
 	r *http.Request,
 	d *platform.DeviceUnknown,
 ) {
-	fmt.Fprint(w, "Hello, this is: ", d.Type())
+	p := d.Platform()
+	if nil != p {
+		fmt.Fprint(w, "Hello, this is: ", d.Type(), d.Platform().Name(), d.Platform().Version())
+	} else {
+		fmt.Fprint(w, "Hello, this is: ", d.Type())
+	}
+
 }
 
 func main() {

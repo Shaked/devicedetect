@@ -27,12 +27,33 @@ type Compiled struct {
 
 //func() platform.Device
 func (p *PreCompiledHandler) compile() *Compiled {
+	type BrowserX struct {
+		Name    string      `json:name,string,omitempty`
+		Version json.Number `json:version,Number,omitempty`
+	}
+	type EngineX struct {
+		Name    string      `json:name,string,omitempty`
+		Version json.Number `json:version,Number,omitempty`
+	}
+	type PlatformX struct {
+		Name    string      `json:name,string,omitempty`
+		Version json.Number `json:version,Number,omitempty`
+		Build   string      `json:build,string,omitempty`
+		Model   string      `json:model,string,omitempty`
+	}
+	type X struct {
+		Brand    string      `json:brand,string,omitempty`
+		Type     string      `json:type,string,omitempty`
+		Platform *PlatformX  `json:platform,omitempty`
+		Engine   *EngineX    `json:engine,omitempty`
+		Browsers []*BrowserX `json:browsers,omitempty`
+		Browser  *BrowserX   `json:browser,omitempty`
+	}
 	v := struct {
-		Meta       map[string]string                 `json:meta`
-		UserAgents map[string]map[string]interface{} `json:userAgents`
+		Meta       map[string]string `json:meta,omitempty`
+		UserAgents map[string]X      `json:userAgents,omitempty`
 	}{}
 
-	log.Println(gouseragents.CompiledUserAgents)
 	err := json.Unmarshal([]byte(gouseragents.CompiledUserAgents), &v)
 	if nil != err {
 		panic(err)
@@ -46,10 +67,19 @@ func (p *PreCompiledHandler) compile() *Compiled {
 	userAgents := map[string]platform.Device{}
 	var device platform.Device
 	for key, deviceInfo := range v.UserAgents {
-		deviceName := deviceInfo["name"].(string)
-		switch deviceInfo["type"].(string) {
+		deviceName := deviceInfo.Brand
+		switch deviceInfo.Type {
 		case "desktop":
 			device = platform.NewDesktop(deviceName)
+			if nil != deviceInfo.Platform {
+				device.SetPlatform(platform.NewPlatform(
+					deviceInfo.Platform.Name,
+					string(deviceInfo.Platform.Version),
+				))
+			}
+			break
+		case "tv":
+			device = platform.NewTv(deviceName)
 			break
 		case "tablet":
 			device = platform.NewTablet(deviceName)
@@ -57,6 +87,15 @@ func (p *PreCompiledHandler) compile() *Compiled {
 		case "app":
 		case "mobile":
 			device = platform.NewMobile(deviceName)
+			if nil != deviceInfo.Platform {
+				a := platform.NewPlatform(
+					deviceInfo.Platform.Name,
+					string(deviceInfo.Platform.Version),
+				)
+				a.SetBuild(string(deviceInfo.Platform.Build))
+				a.SetModel(string(deviceInfo.Platform.Model))
+				device.SetPlatform(a)
+			}
 		case "bot":
 			device = platform.NewBot(deviceName)
 			break
@@ -64,7 +103,7 @@ func (p *PreCompiledHandler) compile() *Compiled {
 			device = platform.NewGlass(deviceName)
 			break
 		default:
-			panic("WTF :" + deviceInfo["type"].(string))
+			panic("WTF :" + deviceInfo.Type)
 		}
 		userAgents[key] = device
 	}
@@ -89,6 +128,7 @@ func (d *DeviceDetect) FindByUserAgent(userAgent string) platform.Device {
 	if ok {
 		return f
 	}
+	log.Println("Unknown")
 	return platform.NewUnknown(userAgent)
 }
 
@@ -118,7 +158,7 @@ func Handler(h PlatformHandler, p *PreCompiledHandler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		m := NewDeviceDetect(r, p)
 		d := m.FindByUserAgent(r.Header.Get("User-Agent"))
-		switch m.PlatformType().(type) {
+		switch t := m.PlatformType().(type) {
 		case *platform.DeviceTablet:
 			h.Tablet(w, r, d.(*platform.DeviceTablet))
 			break
@@ -140,6 +180,11 @@ func Handler(h PlatformHandler, p *PreCompiledHandler) http.Handler {
 		case *platform.DeviceGlass:
 			h.Glass(w, r, d.(*platform.DeviceGlass))
 			break
+		case *platform.DeviceUnknown:
+			h.Unknown(w, r, d.(*platform.DeviceUnknown))
+			break
+		default:
+			panic(fmt.Sprintf("Type %v doesn't exist", t))
 		}
 
 	})
